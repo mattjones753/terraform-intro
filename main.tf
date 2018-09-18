@@ -31,3 +31,7 @@ resource "aws_s3_bucket_object" "river_island_tech_demo_index_html" {
   content_type = "text/html"
   etag         = "${md5(file("index.html"))}"
 }
+
+output "website_url" {
+  value = "${aws_s3_bucket.terraform_intro_demo_bucket.website_endpoint}"
+}
