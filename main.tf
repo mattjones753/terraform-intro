@@ -70,7 +70,7 @@ resource "aws_instance" "jump_box" {
   user_data     = "${data.local_file.install_psql_sh.content}"
 
   key_name        = "${aws_key_pair.ssh_key.key_name}"
-  security_groups = ["${aws_security_group.jump_security_group.name}"]
+  security_groups = ["${aws_security_group.jump_security_group.name}", "default"]
 }
 
 resource "aws_db_instance" "database" {
