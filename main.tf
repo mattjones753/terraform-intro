@@ -32,11 +32,46 @@ resource "aws_s3_bucket_object" "river_island_tech_demo_index_html" {
   etag         = "${md5(file("index.html"))}"
 }
 
+resource "aws_security_group" "jump_security_group" {
+  name        = "jump_security_group"
+  description = "Allow all inbound traffic"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+data "local_file" "public_ssh_key" {
+  filename = "${path.module}/tf_rsa.pub"
+}
+
+resource "aws_key_pair" "ssh_key" {
+  key_name   = "ssh-key"
+  public_key = "${data.local_file.public_ssh_key.content}"
+}
+
 resource "aws_instance" "jump_box" {
   ami           = "ami-0b0a60c0a2bd40612"
   instance_type = "t2.micro"
+  key_name      = "${aws_key_pair.ssh_key.key_name}"
+
+  security_groups = ["${aws_security_group.jump_security_group.name}"]
 }
 
 output "website_url" {
   value = "${aws_s3_bucket.terraform_intro_demo_bucket.website_endpoint}"
+}
+
+output "instance_ip" {
+  value = "${aws_instance.jump_box.public_ip}"
 }
