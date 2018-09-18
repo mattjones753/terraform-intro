@@ -32,6 +32,11 @@ resource "aws_s3_bucket_object" "river_island_tech_demo_index_html" {
   etag         = "${md5(file("index.html"))}"
 }
 
+resource "aws_instance" "jump_box" {
+  ami           = "ami-0b0a60c0a2bd40612"
+  instance_type = "t2.micro"
+}
+
 output "website_url" {
   value = "${aws_s3_bucket.terraform_intro_demo_bucket.website_endpoint}"
 }
