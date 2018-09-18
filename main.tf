@@ -55,6 +55,10 @@ data "local_file" "public_ssh_key" {
   filename = "${path.module}/tf_rsa.pub"
 }
 
+data "local_file" "install_psql_sh" {
+  filename = "${path.module}/install_psql.sh"
+}
+
 resource "aws_key_pair" "ssh_key" {
   key_name   = "ssh-key"
   public_key = "${data.local_file.public_ssh_key.content}"
@@ -63,9 +67,22 @@ resource "aws_key_pair" "ssh_key" {
 resource "aws_instance" "jump_box" {
   ami           = "ami-0b0a60c0a2bd40612"
   instance_type = "t2.micro"
-  key_name      = "${aws_key_pair.ssh_key.key_name}"
+  user_data     = "${data.local_file.install_psql_sh.content}"
 
+  key_name        = "${aws_key_pair.ssh_key.key_name}"
   security_groups = ["${aws_security_group.jump_security_group.name}"]
+}
+
+resource "aws_db_instance" "database" {
+  allocated_storage   = 10
+  storage_type        = "gp2"
+  engine              = "postgres"
+  engine_version      = "10.4"
+  instance_class      = "db.t2.micro"
+  name                = "postgres_db"
+  username            = "dbadmin"
+  password            = "rubbishpassword"
+  skip_final_snapshot = "true"
 }
 
 output "website_url" {
@@ -74,4 +91,8 @@ output "website_url" {
 
 output "instance_ip" {
   value = "${aws_instance.jump_box.public_ip}"
+}
+
+output "rds_instance" {
+  value = "${aws_db_instance.database.address}"
 }
