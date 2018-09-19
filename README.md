@@ -1,10 +1,12 @@
 Terraform Intro Demo
 ==============
 
+This project contains some simple terraform code to show some of the simple features of terraform managing AWS infrastructure in a single account.
+
 Steps
 ----
 
-The various steps are visible as the initial commits to this repository, their details are outlined below:
+The various steps are available as separate branches in this repository named `step_x` where `x` is the step number, their details are outlined below:
 
 ### 1. Create S3 Bucket
 
@@ -41,8 +43,8 @@ replacing <instance_ip> with the actual IP address
 ### 6. Create RDS instance
 
 Step 6 creates an RDS instance using an `aws_db_instance` resource. It will also install the postgres client on the EC2 instance. You should be able to see the instance in the AWS console when its done.
-However, at this stage you will not be able to access the RDS instance from the EC2 instance.
+However, at this stage you will not be able to access the RDS instance from the EC2 instance or elsewhere.
 
 ### 7. Add EC2 instance to same security group as RDS instance
-Step 7 allows us to access the RDS instance from our EC2 instance. It will also let us use the EC2 instance as a jump box
+Step 7 allows us to access the RDS instance from our EC2 instance. It will also let us use the EC2 instance as a jump box to connect to our RDS instance locally
 
